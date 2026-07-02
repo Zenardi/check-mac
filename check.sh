@@ -23,7 +23,7 @@ pmset -g therm
 
 echo -e "\n[5] BLOQUEIO DE ATIVAÇÃO (Activation Lock):"
 # Fundamental: Verifica se o Mac está atrelado ao iCloud de outra pessoa
-system_profiler SPiBridgeDataType | grep "Activation Lock"
+system_profiler SPHardwareDataType | grep "Activation Lock"
 
 echo -e "\n=================================================="
 echo " Concluído. Analise os dados acima com cuidado."
