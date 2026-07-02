@@ -1,23 +1,30 @@
-clear
-echo "\033[1;36m=================================================\033[0m"
-echo "\033[1;32m       DIAGNÓSTICO RÁPIDO DE HARDWARE E MDM      \033[0m"
-echo "\033[1;36m=================================================\033[0m"
+#!/bin/bash
 
-echo "\n\033[1;33m► 1. PROCESSADOR E MEMÓRIA RAM\033[0m"
-system_profiler SPHardwareDataType | grep -E "Model Name|Chip|Total Number of Cores|Memory" | sed 's/^[ \t]*//'
+echo "=================================================="
+echo "    DIAGNÓSTICO PROFUNDO - MACBOOK APPLE SILICON  "
+echo "=================================================="
 
-echo "\n\033[1;33m► 2. ARMAZENAMENTO (SSD)\033[0m"
-diskutil info / | grep -E "Container Total Space|Volume Total Space" | sed 's/^[ \t]*//'
+echo -e "\n[1] ESPECIFICAÇÕES REAIS DO HARDWARE:"
+system_profiler SPHardwareDataType | awk '/Model Name|Model Identifier|Chip|Memory|Serial Number/{print $0}'
 
-echo "\n\033[1;33m► 3. SAÚDE DA BATERIA E CICLOS\033[0m"
-system_profiler SPPowerDataType | grep -E "Cycle Count|Condition|Maximum Capacity" | sed 's/^[ \t]*//'
+echo -e "\n[2] VERIFICAÇÃO DE BATERIA (Real vs Interface):"
+# Puxa os dados brutos de energia
+system_profiler SPPowerDataType | awk '/Cycle Count|Condition|Maximum Capacity/{print $0}'
 
-echo "\n\033[1;33m► 4. BLOQUEIO DE ATIVAÇÃO (iCloud)\033[0m"
-system_profiler SPiBridgeDataType | grep -E "Activation Lock" | sed 's/^[ \t]*//'
+echo -e "\n[3] SAÚDE DO SSD (Status S.M.A.R.T):"
+# Verifica o status de falha do disco interno principal
+diskutil info disk0 | grep -E "SMART Status|Solid State"
+echo "Capacidade e uso da partição principal:"
+df -h / | awk 'NR==2 {print "Tamanho: "$2" | Usado: "$3" | Livre: "$4}'
 
-echo "\n\033[1;33m► 5. GERENCIAMENTO REMOTO (MDM / EMPRESARIAL)\033[0m"
-profiles status -type enrollment
+echo -e "\n[4] VERIFICAÇÃO DE THROTTLING TÉRMICO:"
+# Verifica se o sistema está limitando a CPU por aquecimento no momento
+pmset -g therm
 
-echo "\n\033[1;36m=================================================\033[0m"
-echo "\033[1;32m                 TESTE CONCLUÍDO                 \033[0m"
-echo "\033[1;36m=================================================\033[0m"
+echo -e "\n[5] BLOQUEIO DE ATIVAÇÃO (Activation Lock):"
+# Fundamental: Verifica se o Mac está atrelado ao iCloud de outra pessoa
+system_profiler SPiBridgeDataType | grep "Activation Lock"
+
+echo -e "\n=================================================="
+echo " Concluído. Analise os dados acima com cuidado."
+echo "=================================================="
