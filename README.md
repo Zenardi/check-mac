@@ -60,7 +60,7 @@ echo -e "\\n[4] VERIFICAÇÃO DE THROTTLING TÉRMICO:"
 pmset -g therm
 
 echo -e "\\n[5] BLOQUEIO DE ATIVAÇÃO (Activation Lock):"
-system_profiler SPiBridgeDataType | grep "Activation Lock"
+system_profiler SPHardwareDataType | grep "Activation Lock"
 
 echo -e "\\n=================================================="
 echo " Concluído. Analise os dados acima com cuidado."
